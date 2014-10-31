@@ -18,18 +18,14 @@
     .projection(projection);
 
   var color = d3.scale.linear()
-    .domain([0.5, 0.9])
+    color.domain([0.5, 0.9])
     .range(["red", "green"]);
-
-  
-  var deprivationScale = d3.scale.linear()
-    .range([1, 5]);
 
   var sidebar = d3.select('body').append('table').attr('class', 'sidebar');
   
   function updateSidebar(d) {
     var listItems = sidebar.selectAll('tr').data(_.pairs(d.properties));
-    var newLi = listItems.enter().append('tr');
+    var newLi = listItems.enter().append('tr')
     newLi.append('th');
     newLi.append('td');
     listItems.select('th').text(function (d) { return d[0]; });
@@ -40,19 +36,11 @@
     if (error) return console.error(error);
     console.log(path.centroid(topojson.feature(postcodes, postcodes.objects.sectors)));
     console.log(d3.geo.centroid(topojson.feature(postcodes, postcodes.objects.sectors)));
-
-    var features = topojson.feature(postcodes, postcodes.objects.sectors).features;
     
-    deprivationScale.domain([
-      _.min(_.map(features, function (sector) {
-        return sector.properties.IMD;
-      })),
-      _.max(_.map(features, function (sector) {
-        return sector.properties.IMD;
-      }))]);
+
     
     var sectorEls = svg.attr('style', 'background: red').selectAll('.sector')
-      .data(features);
+      .data(topojson.feature(postcodes, postcodes.objects.sectors).features);
     
     sectorEls.enter().append('path')
       .attr('class', function (d) {
@@ -76,39 +64,20 @@
     
     sectorEls.attr("d", path);
 
+    // var dataEls = svg.attr('style', 'background: red').selectAll('.databubble')
+    //   .data(topojson.feature(postcodes, postcodes.objects.sectors).features);
     
-    // var labelEls = svg.attr('style', 'background: red').selectAll('.label')
-    //   .data(features);
-    
-    // labelEls.enter().append('text');
-    // labelEls
-    //   .attr('class', 'label')
-    //   .attr('dx', function (d) {
+    // dataEls.enter().append('circle');
+    // dataEls
+    //   .attr('class', 'databubble')
+    //   .attr('cx', function (d) {
     //     return path.centroid(d)[0];
     //   })
-    //   .attr('dy', function (d) {
+    //   .attr('cy', function (d) {
     //     return path.centroid(d)[1];
     //   })
-    //   .attr('text-anchor', 'middle');
-    //   .text(function (d) { return d.properties.people; });
-    
-
-    var dataEls = svg.attr('style', 'background: red').selectAll('.databubble')
-      .data(features);
-    
-    dataEls.enter().append('circle');
-    dataEls
-      .attr('class', 'databubble')
-      .attr('cx', function (d) {
-        return path.centroid(d)[0];
-      })
-      .attr('cy', function (d) {
-        return path.centroid(d)[1];
-      })
-      .attr('r', function (d) {
-        return deprivationScale(d.properties.IMD);
-      })
-      .attr('fill', 'yellow');
+    //   .attr('r', 5)
+    //   .attr('fill', 'red');
 
   });
 })();

@@ -14,5 +14,8 @@ build/geojson/sectors.json: build/Distribution/Sectors.shp
 build/topojsonSectors.json: build/geojson/sectors.json
 	topojson -o build/topojsonSectors.json --properties name=name build/geojson/sectors.json
 
-output/bedford.json: build/topojsonSectors.json extractBedford.py
+build/sectorData.json: perSectorData.py data/ofcom-broadband-bedford.csv
+	python perSectorData.py
+
+output/bedford.json: build/topojsonSectors.json extractBedford.py build/sectorData.json
 	python extractBedford.py
